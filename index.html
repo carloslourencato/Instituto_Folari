@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instituto Folari — Portal de Indicadores</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F5F3F0;
+    --dark: #2F3E46;
+    --grey: #6B6B6B;
+    --orange: #F4633A;
+    --card: #FFFFFF;
+    --line: #E4E0DA;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--dark);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.brand-font{
+    font-family:'Manrope', sans-serif;
+  }
+  .topbar{
+    background:var(--dark);
+    color:#fff;
+    padding:22px 40px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  .brand-name{
+    font-family:'Manrope', sans-serif;
+    font-weight:800;
+    font-size:22px;
+    letter-spacing:-0.3px;
+  }
+  .brand-sub{
+    font-size:12px;
+    color:#c9d2d6;
+    font-weight:400;
+    margin-top:2px;
+  }
+  .updated{
+    font-size:12px;
+    color:#c9d2d6;
+    text-align:right;
+  }
+  .updated b{color:#fff;}
+  main{
+    max-width:1180px;
+    margin:0 auto;
+    padding:36px 24px 80px;
+  }
+  section{margin-bottom:56px;}
+  .eyebrow{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:6px;
+  }
+  .eyebrow .num{
+    color:var(--orange);
+    font-weight:800;
+    font-family:'Manrope', sans-serif;
+    font-size:14px;
+  }
+  .eyebrow span.label{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:1.2px;
+    color:var(--grey);
+    font-weight:600;
+  }
+  h2.section-title{
+    font-size:26px;
+    font-weight:800;
+    margin:2px 0 8px;
+    letter-spacing:-0.3px;
+  }
+  p.section-desc{
+    color:var(--grey);
+    font-size:14px;
+    max-width:640px;
+    margin:0 0 24px;
+    line-height:1.5;
+  }
+
+  /* Funil */
+  .funil-wrap{
+    display:flex;
+    align-items:stretch;
+    gap:0;
+    overflow-x:auto;
+    padding-bottom:6px;
+  }
+  .funil-stage{
+    flex:1 1 0;
+    min-width:190px;
+    background:var(--card);
+    border-radius:14px;
+    padding:22px 20px;
+    position:relative;
+    border:1px solid var(--line);
+  }
+  .funil-stage + .funil-stage{margin-left:34px;}
+  .funil-arrow{
+    position:absolute;
+    left:-34px;
+    top:50%;
+    transform:translateY(-50%);
+    width:34px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+  }
+  .funil-arrow svg{display:block;}
+  .funil-arrow .pct{
+    font-size:11px;
+    font-weight:700;
+    color:var(--orange);
+    white-space:nowrap;
+    background:var(--bg);
+    padding:1px 4px;
+    border-radius:4px;
+  }
+  .funil-stage .stage-label{
+    font-size:12px;
+    color:var(--grey);
+    font-weight:500;
+    margin-bottom:10px;
+    min-height:32px;
+    line-height:1.35;
+  }
+  .funil-stage .stage-value{
+    font-family:'Manrope', sans-serif;
+    font-weight:800;
+    font-size:34px;
+    color:var(--dark);
+  }
+  .funil-stage .stage-total-pct{
+    font-size:12px;
+    color:var(--grey);
+    margin-top:6px;
+  }
+  .funil-stage .stage-total-pct b{color:var(--orange);}
+  .funil-stage::before{
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0; height:5px;
+    border-radius:14px 14px 0 0;
+    background:var(--orange);
+    opacity:0;
+  }
+  .funil-stage.s1::before{opacity:1;}
+  .funil-stage.s2::before{opacity:0.75;}
+  .funil-stage.s3::before{opacity:0.5;}
+  .funil-stage.s4::before{opacity:0.28;}
+
+  /* chart card */
+  .chart-card{
+    background:var(--card);
+    border-radius:14px;
+    border:1px solid var(--line);
+    padding:24px;
+  }
+  .toggle-group{
+    display:inline-flex;
+    background:var(--bg);
+    border-radius:10px;
+    padding:4px;
+    margin-bottom:18px;
+  }
+  .toggle-btn{
+    border:none;
+    background:transparent;
+    padding:8px 16px;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--grey);
+    border-radius:8px;
+    cursor:pointer;
+    transition:background .15s, color .15s;
+  }
+  .toggle-btn.active{
+    background:var(--dark);
+    color:#fff;
+  }
+  .chart-container{
+    height:320px;
+    position:relative;
+    transition:height .15s ease;
+  }
+  .timeline-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:4px;
+  }
+  .timeline-title{
+    font-size:16px;
+    font-weight:700;
+    margin:0;
+  }
+  .timeline-legend{
+    display:flex;
+    gap:18px;
+  }
+  .legend-item{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:12px;
+    color:var(--grey);
+  }
+  .legend-swatch{
+    width:10px;
+    height:10px;
+    border-radius:3px;
+    display:inline-block;
+  }
+  .swatch-dark{background:var(--dark);}
+  .swatch-accent{background:var(--orange);}
+
+  /* financial cards */
+  .fin-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:20px;
+  }
+  .fin-card{
+    background:var(--dark);
+    color:#fff;
+    border-radius:14px;
+    padding:26px 24px;
+    position:relative;
+    overflow:hidden;
+  }
+  .fin-card.accent{background:var(--orange);}
+  .fin-card .fin-label{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:#cdd5d8;
+    font-weight:600;
+    margin-bottom:10px;
+  }
+  .fin-card.accent .fin-label{color:rgba(255,255,255,0.85);}
+  .fin-card .fin-value{
+    font-family:'Manrope', sans-serif;
+    font-weight:800;
+    font-size:30px;
+    letter-spacing:-0.5px;
+  }
+  .fin-card .fin-note{
+    font-size:11.5px;
+    color:#b7c1c5;
+    margin-top:10px;
+    line-height:1.4;
+  }
+  .fin-card.accent .fin-note{color:rgba(255,255,255,0.85);}
+  .fin-card .icon{
+    position:absolute;
+    right:-10px;
+    bottom:-10px;
+    opacity:0.14;
+  }
+
+  .footnote{
+    margin-top:60px;
+    padding-top:24px;
+    border-top:1px solid var(--line);
+    font-size:12px;
+    color:var(--grey);
+    line-height:1.6;
+  }
+  .footnote b{color:var(--dark);}
+
+  @media (max-width:760px){
+    .fin-grid{grid-template-columns:1fr;}
+    .funil-wrap{flex-direction:column;}
+    .funil-stage + .funil-stage{margin-left:0; margin-top:34px;}
+    .funil-arrow{
+      left:50%; top:-34px; transform:translateX(-50%) rotate(90deg);
+      width:auto; height:34px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <svg width="34" height="34" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 6 C20 12 20 15 20 18" stroke="#F4633A" stroke-width="2" stroke-linecap="round"/>
+      <path d="M20 18 C16 14 13 12 10 9" stroke="#F4633A" stroke-width="2" stroke-linecap="round"/>
+      <path d="M20 18 C24 14 27 12 30 9" stroke="#F4633A" stroke-width="2" stroke-linecap="round"/>
+      <path d="M20 18 C15 17 11 18 7 17" stroke="#F4633A" stroke-width="2" stroke-linecap="round"/>
+      <path d="M20 18 C25 17 29 18 33 17" stroke="#F4633A" stroke-width="2" stroke-linecap="round"/>
+      <path d="M20 18 C19 25 20 30 20 35" stroke="#F4633A" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="brand-name">Instituto Folari</div>
+      <div class="brand-sub">Portal de Indicadores Estratégicos</div>
+    </div>
+  </div>
+  <div class="updated">Última atualização dos dados<br><b id="lastUpdate">—</b></div>
+</div>
+
+<main>
+
+  <section id="funil-section">
+    <div class="eyebrow"><span class="num">01</span><span class="label">Funil de Vendas</span></div>
+    <h2 class="section-title">Da consulta agendada ao fechamento</h2>
+    <p class="section-desc">Evolução do paciente ao longo da jornada comercial, com a taxa de conversão entre cada etapa e em relação ao total de consultas agendadas.</p>
+
+    <div class="funil-wrap" id="funilWrap"></div>
+  </section>
+
+  <section id="chart-section">
+    <div class="eyebrow"><span class="num">02</span><span class="label">Volume de Consultas</span></div>
+    <h2 class="section-title">Consultas agendadas ao longo do tempo</h2>
+    <p class="section-desc">Quantidade de consultas com agendamento confirmado, agrupadas por dia, por semana (segunda a domingo) e por mês.</p>
+
+    <div class="chart-card">
+      <div class="toggle-group">
+        <button class="toggle-btn active" data-view="daily">Diário</button>
+        <button class="toggle-btn" data-view="weekly">Semanal</button>
+        <button class="toggle-btn" data-view="monthly">Mensal</button>
+      </div>
+      <div class="chart-container" id="chartContainer"></div>
+    </div>
+  </section>
+
+  <section id="fin-section">
+    <div class="eyebrow"><span class="num">03</span><span class="label">Indicador Financeiro</span></div>
+    <h2 class="section-title">Visão macro do caixa</h2>
+    <p class="section-desc">Consolidado da aba Fluxo de Caixa: total faturado, valores já recebidos até a data de hoje e valores futuros a receber.</p>
+
+    <div class="fin-grid">
+      <div class="fin-card">
+        <div class="fin-label">Valor Total de Faturamento</div>
+        <div class="fin-value" id="finTotal">—</div>
+        <div class="fin-note">Soma de todos os pagamentos lançados no Fluxo de Caixa.</div>
+      </div>
+      <div class="fin-card">
+        <div class="fin-label">Valor Total em Caixa</div>
+        <div class="fin-value" id="finCaixa">—</div>
+        <div class="fin-note">Pagamentos com recebimento já realizado (até hoje).</div>
+      </div>
+      <div class="fin-card accent">
+        <div class="fin-label">Valor a Receber</div>
+        <div class="fin-value" id="finReceber">—</div>
+        <div class="fin-note">Pagamentos com recebimento previsto para datas futuras.</div>
+      </div>
+    </div>
+
+    <div class="chart-card" style="margin-top:20px;">
+      <div class="timeline-header">
+        <h3 class="timeline-title">Projeção de Recebimentos Mensais</h3>
+        <div class="timeline-legend">
+          <span class="legend-item"><span class="legend-swatch swatch-dark"></span>Recebido (até hoje)</span>
+          <span class="legend-item"><span class="legend-swatch swatch-accent"></span>Projeção (a receber)</span>
+        </div>
+      </div>
+      <p class="section-desc" style="margin-bottom:16px;">Soma do Valor Pagamento por mês, conforme a data de Recebimento na aba Fluxo de Caixa.</p>
+      <div class="chart-container" id="recebimentosContainer"></div>
+    </div>
+  </section>
+
+  <div class="footnote">
+    <b>Fonte dos dados:</b> planilha <b>Controle_Pacientes.xlsx</b>, aba <b>Indicadores</b> (cálculos ao vivo com
+    fórmulas sobre "Funil de Vendas" e "Fluxo de Caixa") e aba <b>Ind_Aux</b> (séries semanal/mensal de consultas).
+    Os valores estão embutidos diretamente neste arquivo — para atualizar o portal, recalcule a planilha (com ou sem
+    o Claude para Excel), gere um novo snapshot dos mesmos campos e substitua o objeto <code>DATA</code> no início do
+    script deste HTML.
+  </div>
+
+</main>
+
+<script>
+// ---------- DADOS ----------
+// Snapshot extraído da aba "Indicadores" (fórmulas ao vivo) da planilha Controle_Pacientes.xlsx.
+// Embutido diretamente aqui para que esta página funcione sozinha, sem nenhum arquivo externo.
+const DATA = {
+  geradoEm: "2026-07-29",
+  funil: { agendados: 41, compareceram: 30, proposta: 24, propostaPaga: 9 },
+  consultas: {
+    daily: [["2026-06-17",4],["2026-06-23",1],["2026-06-30",2],["2026-07-01",3],["2026-07-13",1],["2026-07-15",6],["2026-07-17",6],["2026-07-18",6],["2026-07-21",1],["2026-07-22",5],["2026-07-24",2],["2026-07-25",1],["2026-07-31",1],["2026-08-08",2]],
+    weekly: [["2026-06-15",4],["2026-06-22",1],["2026-06-29",5],["2026-07-13",19],["2026-07-20",9],["2026-07-27",1],["2026-08-03",2]],
+    monthly: [["2026-06",7],["2026-07",32],["2026-08",2]]
+  },
+  financeiro: { totalFaturamento: 60090, totalCaixa: 26770, aReceber: 33320 },
+  recebimentosMensais: [["2026-04",1000],["2026-06",1500],["2026-07",24770],["2026-08",15495],["2026-09",4675],["2026-10",4425],["2026-11",4425],["2026-12",2800],["2027-01",1000]]
+};
+
+function renderFunil(funil){
+  const stages = [
+    {label:"Consultas agendadas (todas as linhas)", value:funil.agendados, cls:"s1"},
+    {label:"Compareceram à consulta", value:funil.compareceram, cls:"s2"},
+    {label:"Possuem proposta de tratamento", value:funil.proposta, cls:"s3"},
+    {label:"Propostas pagas", value:funil.propostaPaga, cls:"s4"}
+  ];
+
+  const arrowSVG = `<svg width="34" height="14" viewBox="0 0 34 14" fill="none"><path d="M0 7H30" stroke="#6B6B6B" stroke-width="1.4"/><path d="M24 2L30 7L24 12" stroke="#6B6B6B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+  const funilWrap = document.getElementById('funilWrap');
+  funilWrap.innerHTML = '';
+  stages.forEach((s, i) => {
+    const el = document.createElement('div');
+    el.className = `funil-stage ${s.cls}`;
+    const pctTotal = ((s.value / stages[0].value) * 100).toFixed(1);
+    let arrowHTML = '';
+    if (i > 0) {
+      const pctStep = ((s.value / stages[i-1].value) * 100).toFixed(1);
+      arrowHTML = `<div class="funil-arrow">${arrowSVG}<div class="pct">${pctStep}%</div></div>`;
+    }
+    el.innerHTML = `
+      ${arrowHTML}
+      <div class="stage-label">${s.label}</div>
+      <div class="stage-value">${s.value}</div>
+      <div class="stage-total-pct"><b>${pctTotal}%</b> do total de agendados</div>
+    `;
+    funilWrap.appendChild(el);
+  });
+}
+
+// ---------- GRÁFICO (SVG puro, sem biblioteca externa) ----------
+const monthNames = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const weekdayNames = ['dom','seg','ter','qua','qui','sex','sáb'];
+
+function toDate(iso){ return new Date(iso + 'T00:00:00'); }
+function ddmm(d){ return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`; }
+function mondayOf(d){
+  const dow = (d.getDay() + 6) % 7; // 0 = segunda
+  const m = new Date(d);
+  m.setDate(d.getDate() - dow);
+  return m;
+}
+function isoOf(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function monthKeyOf(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; }
+
+function weekRangeLabel(mondayIso){
+  const start = toDate(mondayIso);
+  const end = new Date(start); end.setDate(start.getDate() + 6);
+  return `${ddmm(start)}–${ddmm(end)}`;
+}
+function monthLabel(monthKey){
+  const [y,m] = monthKey.split('-');
+  return `${monthNames[parseInt(m,10)-1]}/${y}`;
+}
+
+function niceMax(v){
+  if (v <= 5) return 5;
+  const step = Math.pow(10, Math.floor(Math.log10(v)));
+  return Math.ceil(v / (step/2)) * (step/2);
+}
+
+// agrupa uma lista de chaves paralelas aos pontos em blocos contíguos {start, end, key}
+function computeGroups(keys){
+  const groups = [];
+  let i = 0;
+  while(i < keys.length){
+    let j = i;
+    while(j + 1 < keys.length && keys[j+1] === keys[i]) j++;
+    groups.push({ start:i, end:j, key:keys[i] });
+    i = j + 1;
+  }
+  return groups;
+}
+
+function renderChart(view){
+  const container = document.getElementById('chartContainer');
+  const series = DATA.consultas[view];
+  if(!series || !series.length){
+    container.style.height = '120px';
+    container.innerHTML = '<p style="color:#6B6B6B;font-size:13px;">Sem dados de consulta para este agrupamento.</p>';
+    return;
+  }
+
+  const dates = series.map(d => toDate(d[0]));
+  const values = series.map(d => d[1]);
+  const maxVal = niceMax(Math.max(...values));
+
+  // quantidade de "camadas" de rótulo no eixo X, por visão
+  const tiers = view === 'daily' ? 3 : (view === 'weekly' ? 2 : 1);
+  const H = view === 'daily' ? 380 : (view === 'weekly' ? 340 : 300);
+  container.style.height = H + 'px';
+
+  const W = 900;
+  const pad = { top: 34, right: 24, bottom: view === 'daily' ? 92 : (view === 'weekly' ? 66 : 40), left: 40 };
+  const innerW = W - pad.left - pad.right;
+  const innerH = H - pad.top - pad.bottom;
+
+  const stepX = values.length > 1 ? innerW / (values.length - 1) : 0;
+  const xAt = i => pad.left + stepX * i;
+  const yAt = v => pad.top + innerH * (1 - v / maxVal);
+
+  const points = values.map((v,i) => [xAt(i), yAt(v)]);
+  const linePath = points.map((p,i) => (i===0 ? `M${p[0]},${p[1]}` : `L${p[0]},${p[1]}`)).join(' ');
+  const areaPath = `${linePath} L${points[points.length-1][0]},${pad.top+innerH} L${points[0][0]},${pad.top+innerH} Z`;
+
+  // gridlines (5 faixas)
+  const ticks = 5;
+  let gridSVG = '', yLabelsSVG = '';
+  for(let t=0; t<=ticks; t++){
+    const val = Math.round(maxVal * t / ticks);
+    const y = yAt(val);
+    gridSVG += `<line x1="${pad.left}" y1="${y}" x2="${W-pad.right}" y2="${y}" stroke="#E4E0DA" stroke-width="1"/>`;
+    yLabelsSVG += `<text x="${pad.left-10}" y="${y+4}" text-anchor="end" font-size="11" font-family="IBM Plex Sans, sans-serif" fill="#6B6B6B">${val}</text>`;
+  }
+
+  // ---- camada 1: rótulo de cada ponto (data + dia da semana, ou período) ----
+  let tier1SVG = '';
+  const tier1Y1 = H - pad.bottom + 16;
+  const tier1Y2 = H - pad.bottom + 29;
+  dates.forEach((d,i) => {
+    const x = xAt(i);
+    if(view === 'daily'){
+      tier1SVG += `<text x="${x}" y="${tier1Y1}" text-anchor="middle" font-size="11" font-weight="600" font-family="IBM Plex Sans, sans-serif" fill="#2F3E46">${ddmm(d)}</text>`;
+      tier1SVG += `<text x="${x}" y="${tier1Y2}" text-anchor="middle" font-size="10" font-family="IBM Plex Sans, sans-serif" fill="#6B6B6B" text-transform="uppercase">${weekdayNames[d.getDay()]}</text>`;
+    } else if(view === 'weekly'){
+      const monday = mondayOf(d);
+      tier1SVG += `<text x="${x}" y="${tier1Y1}" text-anchor="middle" font-size="11" font-weight="600" font-family="IBM Plex Sans, sans-serif" fill="#2F3E46">${weekRangeLabel(isoOf(monday))}</text>`;
+      tier1SVG += `<text x="${x}" y="${tier1Y2}" text-anchor="middle" font-size="10" font-family="IBM Plex Sans, sans-serif" fill="#6B6B6B">seg–dom</text>`;
+    } else {
+      tier1SVG += `<text x="${x}" y="${tier1Y1}" text-anchor="middle" font-size="11" font-weight="600" font-family="IBM Plex Sans, sans-serif" fill="#2F3E46">${monthLabel(monthKeyOf(d))}</text>`;
+    }
+  });
+
+  // ---- camadas 2 e 3: faixas de agrupamento (semana / mês) ----
+  let bandsSVG = '';
+  function drawBandTier(keys, labelFn, y, color){
+    const groups = computeGroups(keys);
+    groups.forEach(g => {
+      const x1 = xAt(g.start) - (g.start===0 ? 0 : stepX/2);
+      const x2 = xAt(g.end) + (g.end===keys.length-1 ? 0 : stepX/2);
+      const xClampL = Math.max(x1, pad.left);
+      const xClampR = Math.min(x2, W - pad.right);
+      const midX = (xClampL + xClampR) / 2;
+      bandsSVG += `<line x1="${xClampL}" y1="${y-6}" x2="${xClampR}" y2="${y-6}" stroke="${color}" stroke-width="1.4"/>`;
+      bandsSVG += `<line x1="${xClampL}" y1="${y-9}" x2="${xClampL}" y2="${y-3}" stroke="${color}" stroke-width="1.4"/>`;
+      bandsSVG += `<line x1="${xClampR}" y1="${y-9}" x2="${xClampR}" y2="${y-3}" stroke="${color}" stroke-width="1.4"/>`;
+      bandsSVG += `<text x="${midX}" y="${y+9}" text-anchor="middle" font-size="10" font-weight="600" font-family="IBM Plex Sans, sans-serif" fill="${color}">${labelFn(g.key)}</text>`;
+    });
+  }
+
+  if(view === 'daily'){
+    const weekKeys = dates.map(d => isoOf(mondayOf(d)));
+    const monthKeys = dates.map(d => monthKeyOf(d));
+    drawBandTier(weekKeys, weekRangeLabel, H - pad.bottom + 48, '#6B6B6B');
+    drawBandTier(monthKeys, monthLabel, H - pad.bottom + 74, '#F4633A');
+  } else if(view === 'weekly'){
+    const monthKeys = dates.map(d => monthKeyOf(mondayOf(d)));
+    drawBandTier(monthKeys, monthLabel, H - pad.bottom + 50, '#F4633A');
+  }
+
+  // ---- pontos + rótulos de valor (visíveis em todas as visões) ----
+  let pointsSVG = '';
+  points.forEach((p,i) => {
+    const labelAbove = p[1] - 12 >= pad.top - 4;
+    const ly = labelAbove ? p[1] - 12 : p[1] + 18;
+    pointsSVG += `
+      <text x="${p[0]}" y="${ly}" text-anchor="middle" font-size="11.5" font-weight="700" font-family="Manrope, sans-serif" fill="#2F3E46">${values[i]}</text>
+      <circle cx="${p[0]}" cy="${p[1]}" r="4" fill="#2F3E46" stroke="#fff" stroke-width="1.5">
+        <title>${values[i]} consulta${values[i]===1?'':'s'}</title>
+      </circle>`;
+  });
+
+  container.innerHTML = `
+    <svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Gráfico de consultas por ${view === 'daily' ? 'dia' : view === 'weekly' ? 'semana' : 'mês'}">
+      ${gridSVG}
+      ${yLabelsSVG}
+      <path d="${areaPath}" fill="#F4633A" opacity="0.12"/>
+      <path d="${linePath}" fill="none" stroke="#F4633A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      ${pointsSVG}
+      ${tier1SVG}
+      ${bandsSVG}
+    </svg>`;
+}
+
+document.querySelectorAll('.toggle-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderChart(btn.dataset.view);
+  });
+});
+
+// ---------- PROJEÇÃO DE RECEBIMENTOS MENSAIS (gráfico de barras) ----------
+function monthStartDate(key){
+  const [y,m] = key.split('-');
+  return new Date(parseInt(y,10), parseInt(m,10)-1, 1);
+}
+
+function renderReceivablesTimeline(){
+  const container = document.getElementById('recebimentosContainer');
+  const series = DATA.recebimentosMensais;
+  if(!series || !series.length){
+    container.style.height = '120px';
+    container.innerHTML = '<p style="color:#6B6B6B;font-size:13px;">Sem lançamentos no Fluxo de Caixa.</p>';
+    return;
+  }
+
+  const cutoff = toDate(DATA.geradoEm);
+  const keys = series.map(d => d[0]);
+  const dates = keys.map(k => monthStartDate(k));
+  const values = series.map(d => d[1]);
+  const maxVal = niceMax(Math.max(...values));
+
+  const W = 900, H = 320;
+  container.style.height = H + 'px';
+  const pad = { top: 34, right: 24, bottom: 48, left: 60 };
+  const innerW = W - pad.left - pad.right;
+  const innerH = H - pad.top - pad.bottom;
+
+  const stepX = values.length > 1 ? innerW / (values.length - 1) : innerW;
+  const xAt = i => pad.left + stepX * i;
+  const yAt = v => pad.top + innerH * (1 - v / maxVal);
+  const barW = Math.max(24, Math.min(56, stepX * 0.55));
+
+  // gridlines + eixo Y em R$
+  const ticks = 5;
+  let gridSVG = '', yLabelsSVG = '';
+  for(let t=0; t<=ticks; t++){
+    const val = Math.round(maxVal * t / ticks);
+    const y = yAt(val);
+    gridSVG += `<line x1="${pad.left}" y1="${y}" x2="${W-pad.right}" y2="${y}" stroke="#E4E0DA" stroke-width="1"/>`;
+    yLabelsSVG += `<text x="${pad.left-10}" y="${y+4}" text-anchor="end" font-size="10.5" font-family="IBM Plex Sans, sans-serif" fill="#6B6B6B">${val.toLocaleString('pt-BR')}</text>`;
+  }
+
+  // barras + rótulos de valor
+  let barsSVG = '';
+  dates.forEach((d,i) => {
+    const x = xAt(i);
+    const yTop = yAt(values[i]);
+    const isFuture = d > cutoff;
+    const color = isFuture ? '#F4633A' : '#2F3E46';
+    const valLabel = values[i] >= 1000 ? (values[i]/1000).toFixed(1).replace('.', ',')+'k' : String(values[i]);
+    barsSVG += `
+      <rect x="${x - barW/2}" y="${yTop}" width="${barW}" height="${(pad.top+innerH)-yTop}" rx="4" fill="${color}" opacity="${isFuture ? 0.85 : 1}">
+        <title>${monthLabel(keys[i])}: R$ ${values[i].toLocaleString('pt-BR')} ${isFuture ? '(projeção)' : '(recebido)'}</title>
+      </rect>
+      <text x="${x}" y="${Math.max(yTop-10, pad.top-6)}" text-anchor="middle" font-size="11" font-weight="700" font-family="Manrope, sans-serif" fill="#2F3E46">${valLabel}</text>`;
+  });
+
+  // camada única: mês
+  let tier1SVG = '';
+  const tier1Y = H - pad.bottom + 22;
+  keys.forEach((k,i) => {
+    tier1SVG += `<text x="${xAt(i)}" y="${tier1Y}" text-anchor="middle" font-size="11" font-weight="600" font-family="IBM Plex Sans, sans-serif" fill="#2F3E46">${monthLabel(k)}</text>`;
+  });
+
+  // linha vertical marcando "hoje"
+  let todaySVG = '';
+  const idxAfterToday = dates.findIndex(d => d > cutoff);
+  if(idxAfterToday > 0){
+    const xToday = (xAt(idxAfterToday-1) + xAt(idxAfterToday)) / 2;
+    todaySVG = `<line x1="${xToday}" y1="${pad.top-14}" x2="${xToday}" y2="${pad.top+innerH}" stroke="#6B6B6B" stroke-width="1.2" stroke-dasharray="4,3"/>
+      <text x="${xToday}" y="${pad.top-18}" text-anchor="middle" font-size="9.5" font-family="IBM Plex Sans, sans-serif" fill="#6B6B6B">hoje</text>`;
+  }
+
+  container.innerHTML = `
+    <svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Projeção de recebimentos mensais">
+      ${gridSVG}
+      ${yLabelsSVG}
+      ${barsSVG}
+      ${tier1SVG}
+      ${todaySVG}
+    </svg>`;
+}
+
+function fmtBRL(v){
+  return v.toLocaleString('pt-BR', {style:'currency', currency:'BRL', maximumFractionDigits:0});
+}
+
+// ---------- INICIALIZAÇÃO ----------
+// Cada bloco roda isolado: se um falhar, os outros ainda aparecem.
+try { renderFunil(DATA.funil); } catch(e){ console.error('Erro no funil:', e); }
+try { renderChart('daily'); } catch(e){ console.error('Erro no gráfico:', e); }
+try {
+  document.getElementById('finTotal').textContent = fmtBRL(DATA.financeiro.totalFaturamento);
+  document.getElementById('finCaixa').textContent = fmtBRL(DATA.financeiro.totalCaixa);
+  document.getElementById('finReceber').textContent = fmtBRL(DATA.financeiro.aReceber);
+} catch(e){ console.error('Erro no financeiro:', e); }
+try { renderReceivablesTimeline(); } catch(e){ console.error('Erro na projeção de recebimentos:', e); }
+try {
+  document.getElementById('lastUpdate').textContent = new Date(DATA.geradoEm + 'T00:00:00')
+    .toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric'});
+} catch(e){ console.error('Erro na data:', e); }
+</script>
+
+</body>
+</html>
