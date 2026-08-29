@@ -222,7 +222,10 @@ $today = Get-Date
 $totalFaturamento = 0.0
 $totalCaixa = 0.0
 $aReceber = 0.0
+$totalDespesas = 0.0
 $recebMensais = @{}
+$despMensais = @{}
+$despCats = @{}
 
 for ($r = 2; $r -le 500; $r++) {
   $nomeFluxo = Get-GridValue $fluxoGrid $r 1
@@ -231,23 +234,32 @@ for ($r = 2; $r -le 500; $r++) {
   if ($null -eq $nomeFluxo -or [string]$nomeFluxo -eq '') { continue }
   if ([string]$nomeFluxo -match '^(TOTAL|Total|Subtotal|Resumo)') { continue }
   $amount = [double]$val
-  if ($amount -le 0) { continue }
   $recvDate = Parse-ExcelDate (Get-GridValue $fluxoGrid $r $colReceb)
   if ($null -eq $recvDate) { continue }
-  $totalFaturamento += $amount
-  if ($null -ne $recvDate) {
-    $monthKey = To-IsoMonth $recvDate
+  $monthKey = To-IsoMonth $recvDate
+  if ($amount -gt 0) {
+    $totalFaturamento += $amount
     if (-not $recebMensais.ContainsKey($monthKey)) { $recebMensais[$monthKey] = 0.0 }
     $recebMensais[$monthKey] += $amount
     if ($recvDate.Date -le $today.Date) { $totalCaixa += $amount }
     else { $aReceber += $amount }
+  } elseif ($amount -lt 0) {
+    $abs = [math]::Abs($amount)
+    $totalDespesas += $abs
+    if (-not $despMensais.ContainsKey($monthKey)) { $despMensais[$monthKey] = 0.0 }
+    $despMensais[$monthKey] += $abs
+    $catName = [string]$nomeFluxo
+    if (-not $despCats.ContainsKey($catName)) { $despCats[$catName] = 0.0 }
+    $despCats[$catName] += $abs
   }
 }
 
 $recebSeries = $recebMensais.GetEnumerator() | Sort-Object Name | ForEach-Object { ,@($_.Name, [math]::Round($_.Value)) }
+$despSeries = $despMensais.GetEnumerator() | Sort-Object Name | ForEach-Object { ,@($_.Name, [math]::Round($_.Value)) }
+$despCatSeries = $despCats.GetEnumerator() | Sort-Object Value -Descending | ForEach-Object { ,@($_.Name, [math]::Round($_.Value)) }
 
-"`nFINANCEIRO totalFaturamento=$([math]::Round($totalFaturamento)) totalCaixa=$([math]::Round($totalCaixa)) aReceber=$([math]::Round($aReceber))"
-"recebimentosMensais count=$($recebSeries.Count)"
+"`nFINANCEIRO totalFaturamento=$([math]::Round($totalFaturamento)) totalCaixa=$([math]::Round($totalCaixa)) aReceber=$([math]::Round($aReceber)) totalDespesas=$([math]::Round($totalDespesas))"
+"recebimentosMensais count=$($recebSeries.Count) despesasMensais count=$($despSeries.Count)"
 
 $geradoEm = (Get-Date).ToString('yyyy-MM-ddTHH:mm:ss')
 
@@ -268,6 +280,9 @@ $dataObj = [ordered]@{
     totalFaturamento = [math]::Round($totalFaturamento)
     totalCaixa = [math]::Round($totalCaixa)
     aReceber = [math]::Round($aReceber)
+    totalDespesas = [math]::Round($totalDespesas)
+    despesasPorCategoria = $despCatSeries
+    despesasMensais = $despSeries
   }
   recebimentosMensais = $recebSeries
 }

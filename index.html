@@ -237,6 +237,7 @@
   }
   .swatch-dark{background:var(--dark);}
   .swatch-accent{background:var(--orange);}
+  .swatch-expense{background:#8A5A4A;}
 
   /* financial cards */
   .fin-grid{
@@ -514,7 +515,7 @@
   <section id="fin-section">
     <div class="eyebrow"><span class="num">03</span><span class="label">Indicador Financeiro</span></div>
     <h2 class="section-title">Visão macro do caixa</h2>
-    <p class="section-desc">Consolidado da aba Fluxo de Caixa: total faturado, valores já recebidos até a data de hoje e valores futuros a receber.</p>
+    <p class="section-desc">Consolidado da aba Fluxo de Caixa: total faturado, valores já recebidos até a data de hoje, valores futuros a receber e saídas de caixa.</p>
 
     <div class="fin-grid">
       <div class="fin-card">
@@ -540,35 +541,16 @@
         <div class="timeline-legend">
           <span class="legend-item"><span class="legend-swatch swatch-dark"></span>Recebido (até hoje)</span>
           <span class="legend-item"><span class="legend-swatch swatch-accent"></span>Projeção (a receber)</span>
+          <span class="legend-item"><span class="legend-swatch swatch-expense"></span>Despesas</span>
         </div>
       </div>
-      <p class="section-desc" style="margin-bottom:16px;">Soma do Valor Pagamento por mês, conforme a data de Recebimento na aba Fluxo de Caixa.</p>
+      <p class="section-desc" style="margin-bottom:16px;">Receitas (Valor Pagamento positivo) e despesas (lançamentos negativos) por mês, conforme a data de Recebimento na aba Fluxo de Caixa.</p>
       <div class="chart-container" id="recebimentosContainer"></div>
     </div>
   </section>
 
-  <section id="desp-section">
-    <div class="eyebrow"><span class="num">04</span><span class="label">Despesas de caixa</span></div>
-    <h2 class="section-title">Saídas lançadas no fluxo</h2>
-    <p class="section-desc">Pagamentos negativos da aba Fluxo_Caixa (equipe, marketing, Livance e insumos).</p>
-    <div class="chart-card">
-      <div class="client-table-wrap">
-        <table class="client-table">
-          <thead>
-            <tr>
-              <th>Categoria</th>
-              <th>Valor</th>
-              <th>% das despesas</th>
-            </tr>
-          </thead>
-          <tbody id="despesaTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
   <section id="dre-section">
-    <div class="eyebrow"><span class="num">05</span><span class="label">DRE</span></div>
+    <div class="eyebrow"><span class="num">04</span><span class="label">DRE</span></div>
     <h2 class="section-title">Demonstração do Resultado</h2>
     <p class="section-desc">Estrutura da aba DRE: receita bruta por serviço, deduções, CMV, margem de contribuição, despesas fixas e resultado operacional, com % sobre a receita bruta do mês.</p>
     <div class="chart-card">
@@ -624,7 +606,8 @@ const DATA = {
     ]
   },
   financeiro: { totalFaturamento: 60090, totalCaixa: 41765, aReceber: 18325, totalDespesas: 23463,
-    despesasPorCategoria: [["PGTO FLAVIA",12750],["PGTO LIVANCE",5079],["PGTO MKT",4950],["PGTO INSUMO - MICROLYSER",684]]
+    despesasPorCategoria: [["PGTO FLAVIA",12750],["PGTO LIVANCE",5079],["PGTO MKT",4950],["PGTO INSUMO - MICROLYSER",684]],
+    despesasMensais: [["2026-08",23463]]
   },
   recebimentosMensais: [["2026-06",1500],["2026-07",24770],["2026-08",15495],["2026-09",4675],["2026-10",4425],["2026-11",4425],["2026-12",2800],["2027-01",2000]],
   clientes: [{"nome":"Cleide Maria Ferlin de Bacco","telefone":"5511971239437","email":"NA@gmail.com","dataConsulta":"2026-06-17","compareceu":"Sim","proposta":"Não","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"Paciente em tratamento oncologico. O médico cardio sugeriu não seguir com o tratamento."},{"nome":"Gabriela Fernandes Franco","telefone":"5511950849186","email":"gabrielaffoliveira.gffo@gmail.com","dataConsulta":"2026-06-17","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Microlyser","valorTratamento":6000,"motivo":""},{"nome":"Maria Aparecida Orfale de Almeida","telefone":"5511999554370","email":"ciorfale@bol.com.br","dataConsulta":"2026-06-17","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Microlyser","valorTratamento":6000,"motivo":""},{"nome":"Raísa Gomide de Oliveira","telefone":"5511983331002","email":"raisa.gomide@gmail.com","dataConsulta":"2026-06-17","compareceu":"Sim","proposta":"Não","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"Não necessita de tratamento."},{"nome":"Gilberto Ornelas","telefone":"5511996357090","email":"gilberto@sensorsystems.com.br","dataConsulta":"2026-06-23","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Transplante de Barba","valorTratamento":22000,"motivo":""},{"nome":"Marcia Ribeiro de Andrade Pepato","telefone":"5511998048507","email":"marciapepato21@gmail.com","dataConsulta":"2026-07-01","compareceu":"Sim","proposta":"Sim","propostaPaga":"Sim","tipo":"Microlyser","valorTratamento":6000,"motivo":""},{"nome":"Patrícia das Graças Honório Torres","telefone":"5511963818264","email":"patriciahonoriot@gmail.com","dataConsulta":"2026-06-30","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Eloá Laís Lobo","telefone":"5511945162992","email":"eloalaislobo@hotmail.com","dataConsulta":"2026-07-01","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Thalita Guimarães Mion","telefone":"5511996079236","email":"thalitagmion@gmail.com","dataConsulta":"2026-07-13","compareceu":"Sim","proposta":"Sim","propostaPaga":"Sim","tipo":"Exossomos","valorTratamento":4070,"motivo":""},{"nome":"Michele Mucci Bauri","telefone":"5511992866772","email":"michelebauri@gmail.com","dataConsulta":"2026-07-01","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Ana Paula Tamura","telefone":"5511985022339","email":"aptamura@yahoo.com.br","dataConsulta":"2026-07-15","compareceu":"Sim","proposta":"Sim","propostaPaga":"Sim","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Vinicius Fostell de Oliveira","telefone":"5511980650090","email":"Vinicius_fostell@hotmail.com","dataConsulta":"2026-07-15","compareceu":"Sim","proposta":"Sim","propostaPaga":"Sim","tipo":"Mesoterapia","valorTratamento":3500,"motivo":""},{"nome":"Giovanna Santos da Costa","telefone":"5511967890778","email":"giovannasst.costa@gmail.com","dataConsulta":"2026-07-15","compareceu":"Não","proposta":"NA","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"NA"},{"nome":"Giovana Nogueira da Rocha","telefone":"5511989458558","email":"michele@nra.adv.br","dataConsulta":"2026-07-17","compareceu":"Sim","proposta":"Sim","propostaPaga":"Sim","tipo":"Mesoterapia","valorTratamento":4000,"motivo":""},{"nome":"Marli Souza","telefone":"5511940714215","email":"draflacosta@gmail.com","dataConsulta":"2026-07-15","compareceu":"Não","proposta":"NA","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"NA"},{"nome":"Ana Cláudia de Andrade Pepato","telefone":"5511995230804","email":"pepatoana@gmail.com","dataConsulta":"2026-07-18","compareceu":"Sim","proposta":"Sim","propostaPaga":"Sim","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Ivete Sester","telefone":"5511972275500","email":"ivete@gmail.com","dataConsulta":"2026-07-18","compareceu":"Sim","proposta":"Sim","propostaPaga":"Sim","tipo":"Microlyser","valorTratamento":6000,"motivo":""},{"nome":"Marcos Seron","telefone":"5511986780415","email":"marcjus14@gmail.com","dataConsulta":"2026-07-15","compareceu":"Sim","proposta":"Sim","propostaPaga":"Sim","tipo":"Microlyser","valorTratamento":11500,"motivo":""},{"nome":"Fabio de Lima Rodrigues Nunes","telefone":"5511982430788","email":"biofasnunes@gmail.com","dataConsulta":"2026-07-17","compareceu":"Não","proposta":"NA","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"NA"},{"nome":"Fernanda Belcior","telefone":"5511943904575","email":"fernandabelchior@gmail.com","dataConsulta":"2026-07-17","compareceu":"Não","proposta":"NA","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"NA"},{"nome":"Paulo Diniz Afonso","telefone":"5511988435483","email":"Paulodinizafonso@hotmail.com","dataConsulta":"2026-07-15","compareceu":"Sim","proposta":"Sim","propostaPaga":"Sim","tipo":"Mesoterapia","valorTratamento":4070,"motivo":""},{"nome":"Kleber Bragato","telefone":"5511999917371","email":"kleberbe@gmail.com","dataConsulta":"2026-07-17","compareceu":"Sim","proposta":"Não","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"Realizará as aplicações com a Pamela."},{"nome":"Maria Regina Moreira da Silva","telefone":"5511940246901","email":"remordida40@gmail.com","dataConsulta":"2026-07-17","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Exossomos","valorTratamento":4500,"motivo":""},{"nome":"DIlsa Maria de Jesus","telefone":"5511997015433","email":"didimuseu@yahoo.com.br","dataConsulta":"2026-07-24","compareceu":"Sim","proposta":"Sim","propostaPaga":"Sim","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Felipe Goes Laurindo","telefone":"5511956915467","email":"felipe.laurindo@yahoo.com.br","dataConsulta":"2026-07-18","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Francine Laiz Raposo Sanchez","telefone":"5511947881960","email":"francine.laiz.sanchez@gmail.com","dataConsulta":"2026-07-18","compareceu":"Não","proposta":"NA","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"NA"},{"nome":"Isabelle Tsushima Pedroso","telefone":"5511994933624","email":"isatauh@gmail.com","dataConsulta":"2026-07-29","compareceu":"Sim","proposta":"Sim","propostaPaga":"Sim","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Miriam Duarte Silveira","telefone":"5511993818558","email":"felicce_miriam@hotmail.com","dataConsulta":"2026-07-18","compareceu":"Não","proposta":"NA","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"NA"},{"nome":"Soraia Cardoso Mateus","telefone":"5511933732873","email":"biancamateus@gmail.com","dataConsulta":"2026-07-18","compareceu":"Não","proposta":"NA","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"NA"},{"nome":"Gabriel Damaceno Nunes","telefone":"5511994164737","email":"gabriel.dmsnn@gmail.com","dataConsulta":"2026-07-21","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Microlyser","valorTratamento":6000,"motivo":""},{"nome":"Aparecida Barbosa de Godoy Vasconcelos","telefone":"5511971524214","email":"cidabgv@hotmail.com.br","dataConsulta":"2026-07-22","compareceu":"Sim","proposta":"Não","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"Em investigação de alopécia frontal fibrozante."},{"nome":"Arthur sosnowij schil","telefone":"5511963640651","email":"arthursosnowij@gmail.com","dataConsulta":"2026-07-22","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Gustavo Machado","telefone":"5521981934496","email":"gusmachadoator@gmail.com","dataConsulta":"2026-07-22","compareceu":"Sim","proposta":"Não","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"Não tem dinheiro. Ator"},{"nome":"Liliane Camargo Gomes Rodrigues","telefone":"5511940101740","email":"lilianecamargo.g30@gmail.com","dataConsulta":"2026-07-22","compareceu":"Sim","proposta":"Não","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"Se recusa a fazer tratamento."},{"nome":"Luana Moura Santos","telefone":"5511984981542","email":"luanamsantoss15@gmail.com","dataConsulta":"2026-07-22","compareceu":"Não","proposta":"NA","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"NA"},{"nome":"Daniela Maia","telefone":"551122959293","email":"Danidanimaia@yahoo.com.br","dataConsulta":"2026-07-24","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Elaine Fontes Mantovani","telefone":"5511930360987","email":"elaine.fontesm@gmail.com","dataConsulta":"2026-07-17","compareceu":"Sim","proposta":"Sim","propostaPaga":"Sim","tipo":"Microlyser","valorTratamento":6000,"motivo":""},{"nome":"Eunice Eugenia Bispo Baratera","telefone":"5511951986343","email":"nicinhabaratera@gmail.com","dataConsulta":"2026-07-25","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Microlyser","valorTratamento":6000,"motivo":""},{"nome":"Caroline Tapias Borelli","telefone":"5511976377062","email":"carol_tapias@hotmail.com","dataConsulta":"2026-07-29","compareceu":"Sim","proposta":"Não","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"Flavia atenderá novamente para fechar o diagnóstico."},{"nome":"Giovana Sardeli de Carvalho","telefone":"5511947181082","email":"giovanasardeli@gmail.com","dataConsulta":"2026-07-29","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Microlyser","valorTratamento":6000,"motivo":""},{"nome":"Gustavo Domingues de Oliveira Gerez","telefone":"5511974465885","email":"carlos.lourencato@gmail.com","dataConsulta":"2026-07-29","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Bruna Fagundes de Barros","telefone":"5511947530877","email":"brunafagundesdebarros@gmail.com","dataConsulta":"2026-06-30","compareceu":"Sim","proposta":"Sim","propostaPaga":"Sim","tipo":"Microlyser","valorTratamento":6000,"motivo":""},{"nome":"Gabriella Moreira Alonso","telefone":"5511979686207","email":"gabi_malonso@hotmail.com","dataConsulta":"2026-07-31","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Microlyser","valorTratamento":6000,"motivo":""},{"nome":"Camilla Vita Pavesi","telefone":"5511982857514","email":"cvpavesi@gmail.com","dataConsulta":"2026-08-05","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Danielly Ambrosio Borgers","telefone":"5511995961704","email":"dsramb@gmail.com","dataConsulta":"2026-08-05","compareceu":"Sim","proposta":"Não","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"Esposa do Edegard"},{"nome":"Mariana Mucci","telefone":"5511946622444","email":"mariana.mucci@outlook.com","dataConsulta":"2026-08-05","compareceu":"Não","proposta":"NA","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"NA"},{"nome":"Mariana Souza Teixeira","telefone":"5512988380388","email":"marieteeixeira@hotmail.com","dataConsulta":"2026-08-05","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Andreza Lima","telefone":"5511985588946","email":"andreza0908@gmail.com","dataConsulta":"2026-08-07","compareceu":"Sim","proposta":"Não","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"Aguardando resultado da biópsia."},{"nome":"Thaís Santana Favali","telefone":"5511993280874","email":"Thais.favali@hotmail.com","dataConsulta":"2026-08-12","compareceu":"Sim","proposta":"Sim","propostaPaga":"Sim","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Renata Motta Reis Raso","telefone":"5511995303335","email":"rraguia@gmail.com","dataConsulta":"2026-08-07","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Microlyser","valorTratamento":6000,"motivo":""},{"nome":"Vinicius Augusto de Oliveira","telefone":"5511991195998","email":"oliveiravini@outlook.com","dataConsulta":"2026-08-07","compareceu":"Não","proposta":"NA","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"NA"},{"nome":"Andrea Aparecida Nardi","telefone":"5511996245511","email":"andreanardi68@icloud.com","dataConsulta":"2026-08-08","compareceu":"Sim","proposta":"Sim","propostaPaga":"Sim","tipo":"Mesoterapia","valorTratamento":2850,"motivo":""},{"nome":"Gabriele Pereira Mendes","telefone":"5511911995752","email":"gabieh.mendes2005@gmail.com","dataConsulta":"2026-08-08","compareceu":"Não","proposta":"NA","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"NA"},{"nome":"Nilsa Iraci Silva de Araujo","telefone":"5511964112969","email":"eli_graci@hotmail.com","dataConsulta":"2026-08-08","compareceu":"Não","proposta":"NA","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"NA"},{"nome":"Milena Mocchegiane Vidal","telefone":"5511990097813","email":"milena.unip@gmail.com","dataConsulta":"2026-08-12","compareceu":"Sim","proposta":"Não","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"É uma LPP que está em tratamento."},{"nome":"Clemilde  Maria de Oliveira Moreira","telefone":"5511997291260","email":"Moreiracleomor@gmail.com","dataConsulta":"2026-08-07","compareceu":"Sim","proposta":"Sim","propostaPaga":"Sim","tipo":"Mesoterapia","valorTratamento":2850,"motivo":""},{"nome":"Vanessa Cemin Pereira","telefone":"5511978733646","email":"Vanessa.cemin2017@gmail.com","dataConsulta":"2026-08-12","compareceu":"Sim","proposta":"Não","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"Não tem dinheiro."},{"nome":"William Ribeiro de Oliveira","telefone":"5511975271953","email":"Willnet@gmail.com","dataConsulta":"2026-08-12","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Microlyser","valorTratamento":6000,"motivo":""},{"nome":"Pedro Lapenta","telefone":"5511965910202","email":"pedro_lapenta@yahoo.com","dataConsulta":"2026-08-14","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Exossomos","valorTratamento":4500,"motivo":""},{"nome":"Anna Carolina Nunes Ferraz","telefone":"5511996324513","email":"annacarolina1984@gmail.com","dataConsulta":"2026-08-15","compareceu":"Não","proposta":"NA","propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":"NA"},{"nome":"Caroline Bispo Baratera","telefone":"5511951986343","email":"","dataConsulta":"2026-08-15","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Dany Santa Rosa","telefone":"5511980861025","email":"dsrdany@gmail.com","dataConsulta":"2026-08-15","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Mesoterapia","valorTratamento":4000,"motivo":""},{"nome":"Marina Conte Machado","telefone":"5511980523190","email":"marinacontemachado@yahoo.com.br","dataConsulta":"2026-08-15","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Microlyser","valorTratamento":6500,"motivo":""},{"nome":"Denilson José dos Santos","telefone":"5511968635465","email":"denils10@outlook.com","dataConsulta":"2026-08-21","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Exossomos","valorTratamento":4500,"motivo":""},{"nome":"Luiz Fernando Cruz Barbosa","telefone":"5511997485116","email":"Luizcruz@crzcontabil.com","dataConsulta":"2026-08-21","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Mariana Araujo Santos","telefone":"5511990159229","email":"araujo.mariana2601@gmail.com","dataConsulta":"2026-08-21","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Fernanda Monique Nojosa Costa de Almeida","telefone":"5511947410940","email":"fernanda.costaalmeida@bol.com.br","dataConsulta":"2026-08-26","compareceu":"Não","proposta":null,"propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":""},{"nome":"Sarah Gonçalves de Andrade","telefone":"5511997916224","email":"andradesarah34@gmail.com","dataConsulta":"2026-08-26","compareceu":"Sim","proposta":"Sim","propostaPaga":"Não","tipo":"Mesoterapia","valorTratamento":3000,"motivo":""},{"nome":"Camila de Abreu Aires Ribeiro Costa","telefone":"5511972275888","email":"camilaabreuvet@hotmail.com","dataConsulta":"2026-08-28","compareceu":null,"proposta":null,"propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":""},{"nome":"Gabriella Aida Bagneti Rodrigues","telefone":"5511950677985","email":"bagnetiarte@gmail.com","dataConsulta":"2026-08-28","compareceu":"Não","proposta":null,"propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":""},{"nome":"Tamires Marques Antunes","telefone":"5511965837884","email":"Rennqsrevo@gmail.com","dataConsulta":"2026-08-28","compareceu":null,"proposta":null,"propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":""},{"nome":"Osanna Ester Codjaian","telefone":"5513981511723","email":"osannaes@gmail.com","dataConsulta":"2026-08-29","compareceu":null,"proposta":null,"propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":""},{"nome":"Isabela Galeote","telefone":"5511964163422","email":"isabelagaleote@gmail.com","dataConsulta":"2026-09-04","compareceu":null,"proposta":null,"propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":""},{"nome":"Ligia Barbosa Antonellli","telefone":"5511998278697","email":"ligia_ba190@hotmail.com","dataConsulta":"2026-09-04","compareceu":null,"proposta":null,"propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":""},{"nome":"Poliana Barroso Nojosa Costa","telefone":"5511990085491","email":"poli_costa88@hotmail.com","dataConsulta":"2026-09-16","compareceu":null,"proposta":null,"propostaPaga":null,"tipo":"","valorTratamento":null,"motivo":""}]
@@ -832,20 +815,32 @@ function monthStartDate(key){
   return new Date(parseInt(y,10), parseInt(m,10)-1, 1);
 }
 
+function compactBRL(v){
+  return v >= 1000 ? (v/1000).toFixed(1).replace('.', ',')+'k' : String(v);
+}
+
 function renderReceivablesTimeline(){
   const container = document.getElementById('recebimentosContainer');
-  const series = DATA.recebimentosMensais;
-  if(!series || !series.length){
+  const recSeries = DATA.recebimentosMensais || [];
+  const despSeries = (DATA.financeiro && DATA.financeiro.despesasMensais) || [];
+  if(!recSeries.length && !despSeries.length){
     container.style.height = '120px';
     container.innerHTML = '<p style="color:#6B6B6B;font-size:13px;">Sem lançamentos no Fluxo de Caixa.</p>';
     return;
   }
 
+  const recMap = Object.fromEntries(recSeries);
+  const despMap = Object.fromEntries(despSeries);
+  const keys = [...new Set([...recSeries.map(d => d[0]), ...despSeries.map(d => d[0])])].sort();
   const cutoff = toDate(DATA.geradoEm);
-  const keys = series.map(d => d[0]);
   const dates = keys.map(k => monthStartDate(k));
-  const values = series.map(d => d[1]);
-  const maxVal = niceMax(Math.max(...values));
+  const recVals = keys.map(k => recMap[k] || 0);
+  const despVals = keys.map(k => despMap[k] || 0);
+  const maxVal = niceMax(Math.max(1, ...recVals, ...despVals));
+  const cats = DATA.financeiro.despesasPorCategoria || [];
+  const catTip = cats.length
+    ? cats.map(([n,v]) => `${n}: R$ ${v.toLocaleString('pt-BR')}`).join(' · ')
+    : '';
 
   const W = 900, H = 320;
   container.style.height = H + 'px';
@@ -853,12 +848,12 @@ function renderReceivablesTimeline(){
   const innerW = W - pad.left - pad.right;
   const innerH = H - pad.top - pad.bottom;
 
-  const stepX = values.length > 1 ? innerW / (values.length - 1) : innerW;
+  const stepX = keys.length > 1 ? innerW / (keys.length - 1) : innerW;
   const xAt = i => pad.left + stepX * i;
   const yAt = v => pad.top + innerH * (1 - v / maxVal);
-  const barW = Math.max(24, Math.min(56, stepX * 0.55));
+  const clusterW = Math.max(28, Math.min(64, stepX * 0.72));
+  const barW = Math.max(12, clusterW / 2 - 2);
 
-  // gridlines + eixo Y em R$
   const ticks = 5;
   let gridSVG = '', yLabelsSVG = '';
   for(let t=0; t<=ticks; t++){
@@ -868,29 +863,43 @@ function renderReceivablesTimeline(){
     yLabelsSVG += `<text x="${pad.left-10}" y="${y+4}" text-anchor="end" font-size="10.5" font-family="IBM Plex Sans, sans-serif" fill="#6B6B6B">${val.toLocaleString('pt-BR')}</text>`;
   }
 
-  // barras + rótulos de valor
+  const baseline = pad.top + innerH;
   let barsSVG = '';
   dates.forEach((d,i) => {
     const x = xAt(i);
-    const yTop = yAt(values[i]);
-    const isFuture = d > cutoff;
-    const color = isFuture ? '#F4633A' : '#2F3E46';
-    const valLabel = values[i] >= 1000 ? (values[i]/1000).toFixed(1).replace('.', ',')+'k' : String(values[i]);
-    barsSVG += `
-      <rect x="${x - barW/2}" y="${yTop}" width="${barW}" height="${(pad.top+innerH)-yTop}" rx="4" fill="${color}" opacity="${isFuture ? 0.85 : 1}">
-        <title>${monthLabel(keys[i])}: R$ ${values[i].toLocaleString('pt-BR')} ${isFuture ? '(projeção)' : '(recebido)'}</title>
+    const rec = recVals[i];
+    const desp = despVals[i];
+    const hasBoth = rec > 0 && desp > 0;
+    const recX = hasBoth ? x - barW / 2 - 1 : x;
+    const despX = hasBoth ? x + barW / 2 + 1 : x;
+
+    if(rec > 0){
+      const yTop = yAt(rec);
+      const isFuture = d > cutoff;
+      const color = isFuture ? '#F4633A' : '#2F3E46';
+      barsSVG += `
+      <rect x="${recX - barW/2}" y="${yTop}" width="${barW}" height="${baseline-yTop}" rx="4" fill="${color}" opacity="${isFuture ? 0.85 : 1}">
+        <title>${monthLabel(keys[i])} · Receita: R$ ${rec.toLocaleString('pt-BR')} ${isFuture ? '(projeção)' : '(recebido)'}</title>
       </rect>
-      <text x="${x}" y="${Math.max(yTop-10, pad.top-6)}" text-anchor="middle" font-size="11" font-weight="700" font-family="Manrope, sans-serif" fill="#2F3E46">${valLabel}</text>`;
+      <text x="${recX}" y="${Math.max(yTop-10, pad.top-6)}" text-anchor="middle" font-size="10.5" font-weight="700" font-family="Manrope, sans-serif" fill="#2F3E46">${compactBRL(rec)}</text>`;
+    }
+    if(desp > 0){
+      const yTop = yAt(desp);
+      const tip = `${monthLabel(keys[i])} · Despesas: R$ ${desp.toLocaleString('pt-BR')}${catTip ? ' — '+catTip : ''}`;
+      barsSVG += `
+      <rect x="${despX - barW/2}" y="${yTop}" width="${barW}" height="${baseline-yTop}" rx="4" fill="#8A5A4A">
+        <title>${tip}</title>
+      </rect>
+      <text x="${despX}" y="${Math.max(yTop-10, pad.top-6)}" text-anchor="middle" font-size="10.5" font-weight="700" font-family="Manrope, sans-serif" fill="#8A5A4A">${compactBRL(desp)}</text>`;
+    }
   });
 
-  // camada única: mês
   let tier1SVG = '';
   const tier1Y = H - pad.bottom + 22;
   keys.forEach((k,i) => {
     tier1SVG += `<text x="${xAt(i)}" y="${tier1Y}" text-anchor="middle" font-size="11" font-weight="600" font-family="IBM Plex Sans, sans-serif" fill="#2F3E46">${monthLabel(k)}</text>`;
   });
 
-  // linha vertical marcando "hoje"
   let todaySVG = '';
   const idxAfterToday = dates.findIndex(d => d > cutoff);
   if(idxAfterToday > 0){
@@ -900,7 +909,7 @@ function renderReceivablesTimeline(){
   }
 
   container.innerHTML = `
-    <svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Projeção de recebimentos mensais">
+    <svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Receitas e despesas mensais do fluxo de caixa">
       ${gridSVG}
       ${yLabelsSVG}
       ${barsSVG}
@@ -1059,19 +1068,6 @@ function renderDRE(){
   }).join('');
 }
 
-function renderDespesas(){
-  const body = document.getElementById('despesaTableBody');
-  if(!body) return;
-  const cats = DATA.financeiro.despesasPorCategoria || [];
-  const total = DATA.financeiro.totalDespesas || cats.reduce((s, r) => s + r[1], 0);
-  body.innerHTML = cats.map(([nome, val]) => `
-    <tr>
-      <td>${escapeHtml(nome)}</td>
-      <td>${fmtBRL(val)}</td>
-      <td>${pct(val, total)}</td>
-    </tr>`).join('');
-}
-
 // ---------- INICIALIZAÇÃO ----------
 // Cada bloco roda isolado: se um falhar, os outros ainda aparecem.
 try { renderFunil(DATA.funil); } catch(e){ console.error('Erro no funil:', e); }
@@ -1083,7 +1079,6 @@ try {
   document.getElementById('finReceber').textContent = fmtBRL(DATA.financeiro.aReceber);
 } catch(e){ console.error('Erro no financeiro:', e); }
 try { renderDRE(); } catch(e){ console.error('Erro no DRE:', e); }
-try { renderDespesas(); } catch(e){ console.error('Erro nas despesas:', e); }
 try { renderReceivablesTimeline(); } catch(e){ console.error('Erro na projeção de recebimentos:', e); }
 try {
   const updatedAt = toDate(DATA.geradoEm);
