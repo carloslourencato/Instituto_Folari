@@ -237,12 +237,12 @@
   }
   .swatch-dark{background:var(--dark);}
   .swatch-accent{background:var(--orange);}
-  .swatch-expense{background:#8A5A4A;}
+  .swatch-expense{background:#C0392B;}
 
   /* financial cards */
   .fin-grid{
     display:grid;
-    grid-template-columns:repeat(3, 1fr);
+    grid-template-columns:repeat(4, 1fr);
     gap:20px;
   }
   .fin-card{
@@ -254,6 +254,7 @@
     overflow:hidden;
   }
   .fin-card.accent{background:var(--orange);}
+  .fin-card.expense{background:#C0392B;}
   .fin-card .fin-label{
     font-size:12px;
     text-transform:uppercase;
@@ -262,7 +263,8 @@
     font-weight:600;
     margin-bottom:10px;
   }
-  .fin-card.accent .fin-label{color:rgba(255,255,255,0.85);}
+  .fin-card.accent .fin-label,
+  .fin-card.expense .fin-label{color:rgba(255,255,255,0.85);}
   .fin-card .fin-value{
     font-family:'Manrope', sans-serif;
     font-weight:800;
@@ -275,7 +277,8 @@
     margin-top:10px;
     line-height:1.4;
   }
-  .fin-card.accent .fin-note{color:rgba(255,255,255,0.85);}
+  .fin-card.accent .fin-note,
+  .fin-card.expense .fin-note{color:rgba(255,255,255,0.85);}
   .fin-card .icon{
     position:absolute;
     right:-10px;
@@ -428,6 +431,9 @@
   .dre-neg{color:#F4633A;}
   table.dre-table tr.dre-result .dre-neg{color:#FFB199;}
 
+  @media (max-width:1100px){
+    .fin-grid{grid-template-columns:repeat(2, 1fr);}
+  }
   @media (max-width:760px){
     .fin-grid{grid-template-columns:1fr;}
     .funil-wrap{flex-direction:column;}
@@ -533,18 +539,23 @@
         <div class="fin-value" id="finReceber">—</div>
         <div class="fin-note">Pagamentos com recebimento previsto para datas futuras.</div>
       </div>
+      <div class="fin-card expense">
+        <div class="fin-label">Despesas de caixa</div>
+        <div class="fin-value" id="finDespesas">—</div>
+        <div class="fin-note">Saídas lançadas no Fluxo de Caixa (valores negativos).</div>
+      </div>
     </div>
 
     <div class="chart-card" style="margin-top:20px;">
       <div class="timeline-header">
-        <h3 class="timeline-title">Projeção de Recebimentos Mensais</h3>
+        <h3 class="timeline-title">Receitas e despesas mensais</h3>
         <div class="timeline-legend">
           <span class="legend-item"><span class="legend-swatch swatch-dark"></span>Recebido (até hoje)</span>
           <span class="legend-item"><span class="legend-swatch swatch-accent"></span>Projeção (a receber)</span>
           <span class="legend-item"><span class="legend-swatch swatch-expense"></span>Despesas</span>
         </div>
       </div>
-      <p class="section-desc" style="margin-bottom:16px;">Receitas (Valor Pagamento positivo) e despesas (lançamentos negativos) por mês, conforme a data de Recebimento na aba Fluxo de Caixa.</p>
+      <p class="section-desc" style="margin-bottom:16px;">Receitas acima do eixo e despesas abaixo, pela data de Recebimento na aba Fluxo de Caixa.</p>
       <div class="chart-container" id="recebimentosContainer"></div>
     </div>
   </section>
@@ -842,60 +853,59 @@ function renderReceivablesTimeline(){
     ? cats.map(([n,v]) => `${n}: R$ ${v.toLocaleString('pt-BR')}`).join(' · ')
     : '';
 
-  const W = 900, H = 320;
+  const W = 900, H = 380;
   container.style.height = H + 'px';
-  const pad = { top: 34, right: 24, bottom: 48, left: 60 };
+  const pad = { top: 36, right: 24, bottom: 48, left: 64 };
   const innerW = W - pad.left - pad.right;
   const innerH = H - pad.top - pad.bottom;
+  const zeroY = pad.top + innerH * 0.52;
+  const upH = zeroY - pad.top;
+  const downH = pad.top + innerH - zeroY;
 
   const stepX = keys.length > 1 ? innerW / (keys.length - 1) : innerW;
   const xAt = i => pad.left + stepX * i;
-  const yAt = v => pad.top + innerH * (1 - v / maxVal);
-  const clusterW = Math.max(28, Math.min(64, stepX * 0.72));
-  const barW = Math.max(12, clusterW / 2 - 2);
+  const yRec = v => zeroY - upH * (v / maxVal);
+  const yDesp = v => zeroY + downH * (v / maxVal);
+  const barW = Math.max(22, Math.min(44, stepX * 0.42));
 
-  const ticks = 5;
+  const tickVals = [maxVal, Math.round(maxVal/2), 0, -Math.round(maxVal/2), -maxVal];
   let gridSVG = '', yLabelsSVG = '';
-  for(let t=0; t<=ticks; t++){
-    const val = Math.round(maxVal * t / ticks);
-    const y = yAt(val);
-    gridSVG += `<line x1="${pad.left}" y1="${y}" x2="${W-pad.right}" y2="${y}" stroke="#E4E0DA" stroke-width="1"/>`;
+  tickVals.forEach(val => {
+    const y = val >= 0 ? yRec(val) : yDesp(-val);
+    const stroke = val === 0 ? '#2F3E46' : '#E4E0DA';
+    const sw = val === 0 ? 1.4 : 1;
+    gridSVG += `<line x1="${pad.left}" y1="${y}" x2="${W-pad.right}" y2="${y}" stroke="${stroke}" stroke-width="${sw}"/>`;
     yLabelsSVG += `<text x="${pad.left-10}" y="${y+4}" text-anchor="end" font-size="10.5" font-family="IBM Plex Sans, sans-serif" fill="#6B6B6B">${val.toLocaleString('pt-BR')}</text>`;
-  }
+  });
 
-  const baseline = pad.top + innerH;
   let barsSVG = '';
   dates.forEach((d,i) => {
     const x = xAt(i);
     const rec = recVals[i];
     const desp = despVals[i];
-    const hasBoth = rec > 0 && desp > 0;
-    const recX = hasBoth ? x - barW / 2 - 1 : x;
-    const despX = hasBoth ? x + barW / 2 + 1 : x;
-
     if(rec > 0){
-      const yTop = yAt(rec);
+      const yTop = yRec(rec);
       const isFuture = d > cutoff;
       const color = isFuture ? '#F4633A' : '#2F3E46';
       barsSVG += `
-      <rect x="${recX - barW/2}" y="${yTop}" width="${barW}" height="${baseline-yTop}" rx="4" fill="${color}" opacity="${isFuture ? 0.85 : 1}">
+      <rect x="${x - barW/2}" y="${yTop}" width="${barW}" height="${Math.max(0, zeroY-yTop)}" rx="4" fill="${color}" opacity="${isFuture ? 0.85 : 1}">
         <title>${monthLabel(keys[i])} · Receita: R$ ${rec.toLocaleString('pt-BR')} ${isFuture ? '(projeção)' : '(recebido)'}</title>
       </rect>
-      <text x="${recX}" y="${Math.max(yTop-10, pad.top-6)}" text-anchor="middle" font-size="10.5" font-weight="700" font-family="Manrope, sans-serif" fill="#2F3E46">${compactBRL(rec)}</text>`;
+      <text x="${x}" y="${Math.max(yTop-8, pad.top-4)}" text-anchor="middle" font-size="10.5" font-weight="700" font-family="Manrope, sans-serif" fill="#2F3E46">${compactBRL(rec)}</text>`;
     }
     if(desp > 0){
-      const yTop = yAt(desp);
+      const yBot = yDesp(desp);
       const tip = `${monthLabel(keys[i])} · Despesas: R$ ${desp.toLocaleString('pt-BR')}${catTip ? ' — '+catTip : ''}`;
       barsSVG += `
-      <rect x="${despX - barW/2}" y="${yTop}" width="${barW}" height="${baseline-yTop}" rx="4" fill="#8A5A4A">
+      <rect x="${x - barW/2}" y="${zeroY}" width="${barW}" height="${Math.max(0, yBot-zeroY)}" rx="4" fill="#C0392B">
         <title>${tip}</title>
       </rect>
-      <text x="${despX}" y="${Math.max(yTop-10, pad.top-6)}" text-anchor="middle" font-size="10.5" font-weight="700" font-family="Manrope, sans-serif" fill="#8A5A4A">${compactBRL(desp)}</text>`;
+      <text x="${x}" y="${Math.min(yBot+16, H-pad.bottom+6)}" text-anchor="middle" font-size="10.5" font-weight="700" font-family="Manrope, sans-serif" fill="#C0392B">${compactBRL(desp)}</text>`;
     }
   });
 
   let tier1SVG = '';
-  const tier1Y = H - pad.bottom + 22;
+  const tier1Y = H - 16;
   keys.forEach((k,i) => {
     tier1SVG += `<text x="${xAt(i)}" y="${tier1Y}" text-anchor="middle" font-size="11" font-weight="600" font-family="IBM Plex Sans, sans-serif" fill="#2F3E46">${monthLabel(k)}</text>`;
   });
@@ -1077,6 +1087,7 @@ try {
   document.getElementById('finTotal').textContent = fmtBRL(DATA.financeiro.totalFaturamento);
   document.getElementById('finCaixa').textContent = fmtBRL(DATA.financeiro.totalCaixa);
   document.getElementById('finReceber').textContent = fmtBRL(DATA.financeiro.aReceber);
+  document.getElementById('finDespesas').textContent = fmtBRL(DATA.financeiro.totalDespesas || 0);
 } catch(e){ console.error('Erro no financeiro:', e); }
 try { renderDRE(); } catch(e){ console.error('Erro no DRE:', e); }
 try { renderReceivablesTimeline(); } catch(e){ console.error('Erro na projeção de recebimentos:', e); }
