@@ -385,29 +385,28 @@
   </section>
 
   <div class="footnote">
-    <b>Fonte dos dados:</b> planilha <b>Controle_Pacientes.xlsx</b>, aba <b>Indicadores</b> (cálculos ao vivo com
-    fórmulas sobre "Funil de Vendas" e "Fluxo de Caixa") e aba <b>Ind_Aux</b> (séries semanal/mensal de consultas).
-    Os valores estão embutidos diretamente neste arquivo — para atualizar o portal, recalcule a planilha (com ou sem
-    o Claude para Excel), gere um novo snapshot dos mesmos campos e substitua o objeto <code>DATA</code> no início do
-    script deste HTML.
+    <b>Fonte dos dados:</b> planilha <b>PN - Instituto Folari.xlsx</b>, aba <b>Funil_Vendas</b> (funil e volume de consultas)
+    e aba <b>Fluxo_Caixa</b> (indicadores financeiros e projeção de recebimentos).
+    Os valores estão embutidos diretamente neste arquivo — para atualizar o portal, recalcule a planilha,
+    execute <code>extract-data.ps1</code> e substitua o objeto <code>DATA</code> no início do script deste HTML.
   </div>
 
 </main>
 
 <script>
 // ---------- DADOS ----------
-// Snapshot extraído da aba "Indicadores" (fórmulas ao vivo) da planilha Controle_Pacientes.xlsx.
+// Snapshot extraído das abas Funil_Vendas e Fluxo_Caixa da planilha PN - Instituto Folari.xlsx.
 // Embutido diretamente aqui para que esta página funcione sozinha, sem nenhum arquivo externo.
 const DATA = {
-  geradoEm: "2026-07-29",
-  funil: { agendados: 41, compareceram: 30, proposta: 24, propostaPaga: 9 },
+  geradoEm: "2026-08-29T13:45:06",
+  funil: { agendados: 75, compareceram: 54, proposta: 43, propostaPaga: 16 },
   consultas: {
-    daily: [["2026-06-17",4],["2026-06-23",1],["2026-06-30",2],["2026-07-01",3],["2026-07-13",1],["2026-07-15",6],["2026-07-17",6],["2026-07-18",6],["2026-07-21",1],["2026-07-22",5],["2026-07-24",2],["2026-07-25",1],["2026-07-31",1],["2026-08-08",2]],
-    weekly: [["2026-06-15",4],["2026-06-22",1],["2026-06-29",5],["2026-07-13",19],["2026-07-20",9],["2026-07-27",1],["2026-08-03",2]],
-    monthly: [["2026-06",7],["2026-07",32],["2026-08",2]]
+    daily: [["2026-06-17",4],["2026-06-23",1],["2026-06-30",2],["2026-07-01",3],["2026-07-13",1],["2026-07-15",6],["2026-07-17",6],["2026-07-18",6],["2026-07-21",1],["2026-07-22",5],["2026-07-24",2],["2026-07-25",1],["2026-07-29",4],["2026-07-31",1],["2026-08-05",4],["2026-08-07",4],["2026-08-08",3],["2026-08-12",4],["2026-08-14",1],["2026-08-15",4],["2026-08-21",3],["2026-08-26",2],["2026-08-28",3],["2026-08-29",1],["2026-09-04",2],["2026-09-16",1]],
+    weekly: [["2026-06-15",4],["2026-06-22",1],["2026-06-29",5],["2026-07-13",19],["2026-07-20",9],["2026-07-27",5],["2026-08-03",11],["2026-08-10",9],["2026-08-17",3],["2026-08-24",6],["2026-08-31",2],["2026-09-14",1]],
+    monthly: [["2026-06",7],["2026-07",36],["2026-08",29],["2026-09",3]]
   },
-  financeiro: { totalFaturamento: 60090, totalCaixa: 26770, aReceber: 33320 },
-  recebimentosMensais: [["2026-04",1000],["2026-06",1500],["2026-07",24770],["2026-08",15495],["2026-09",4675],["2026-10",4425],["2026-11",4425],["2026-12",2800],["2027-01",1000]]
+  financeiro: { totalFaturamento: 60090, totalCaixa: 41765, aReceber: 18325 },
+  recebimentosMensais: [["2026-06",1500],["2026-07",24770],["2026-08",15495],["2026-09",4675],["2026-10",4425],["2026-11",4425],["2026-12",2800],["2027-01",2000]]
 };
 
 function renderFunil(funil){
