@@ -1,5 +1,5 @@
 ﻿{
-    "geradoEm":  "2026-08-29T13:45:06",
+    "geradoEm":  "2026-08-31T15:24:32",
     "funil":  {
                   "agendados":  75,
                   "compareceram":  54,
@@ -182,10 +182,47 @@
                                       ]
                                   ]
                   },
+    "locais":  [
+                   {
+                       "local":  "Tatuapé",
+                       "agendados":  52,
+                       "compareceram":  37,
+                       "pagas":  10
+                   },
+                   {
+                       "local":  "Perdizes",
+                       "agendados":  23,
+                       "compareceram":  17,
+                       "pagas":  6
+                   }
+               ],
     "financeiro":  {
                        "totalFaturamento":  60090,
                        "totalCaixa":  41765,
-                       "aReceber":  18325
+                       "aReceber":  18325,
+                       "totalDespesas":  23463,
+                       "despesasPorCategoria":  [
+                                                    [
+                                                        "PGTO FLAVIA",
+                                                        12750
+                                                    ],
+                                                    [
+                                                        "PGTO LIVANCE",
+                                                        5079
+                                                    ],
+                                                    [
+                                                        "PGTO MKT",
+                                                        4950
+                                                    ],
+                                                    [
+                                                        "PGTO INSUMO - MICROLYSER",
+                                                        684
+                                                    ]
+                                                ],
+                       "despesasMensais":  [
+                                               "2026-08",
+                                               23463
+                                           ]
                    },
     "recebimentosMensais":  [
                                 [

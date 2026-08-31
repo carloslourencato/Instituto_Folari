@@ -320,6 +320,51 @@
   }
   .footnote b{color:var(--dark);}
 
+  .loc-grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:16px;
+    margin-bottom:18px;
+  }
+  .loc-card{
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:18px 18px 16px;
+  }
+  .loc-card.lead{border-color:var(--orange);}
+  .loc-name{
+    font-family:'Manrope', sans-serif;
+    font-weight:800;
+    font-size:18px;
+    margin:0 0 4px;
+  }
+  .loc-badges{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; min-height:22px;}
+  .loc-badge{
+    font-size:10px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    padding:3px 8px;
+    border-radius:999px;
+    background:#E8F3EC;
+    color:#2B6B3F;
+  }
+  .loc-badge.paid{background:#F7E7E3;color:#B23B22;}
+  .loc-metrics{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:10px;
+  }
+  .loc-metric .lbl{font-size:11px; color:var(--grey); font-weight:600;}
+  .loc-metric .val{
+    font-family:'Manrope', sans-serif;
+    font-weight:800;
+    font-size:22px;
+    margin-top:2px;
+  }
+  .loc-metric .sub{font-size:11px; color:var(--grey); margin-top:2px;}
+
   .client-card{
     margin-top:22px;
     background:var(--card);
@@ -466,6 +511,8 @@
       left:50%; top:-34px; transform:translateX(-50%) rotate(90deg);
       width:auto; height:34px;
     }
+    .loc-grid{grid-template-columns:1fr;}
+    .loc-metrics{grid-template-columns:1fr 1fr 1fr;}
   }
 </style>
 </head>
@@ -503,6 +550,19 @@
     <p class="section-desc">Evolução do paciente ao longo da jornada comercial, com a taxa de conversão entre cada etapa e em relação ao total de consultas agendadas.</p>
 
     <div class="funil-wrap" id="funilWrap"></div>
+
+    <div class="chart-card" style="margin-top:22px;">
+      <div class="timeline-header">
+        <h3 class="timeline-title">Desempenho por local</h3>
+        <div class="timeline-legend">
+          <span class="legend-item"><span class="legend-swatch swatch-dark"></span>Compareceram (Sim)</span>
+          <span class="legend-item"><span class="legend-swatch swatch-accent"></span>Propostas fechadas (Tratamento Pago? Sim)</span>
+        </div>
+      </div>
+      <p class="section-desc" style="margin-bottom:16px;">Campo Local da aba Funil_Vendas: consultas com comparecimento e propostas pagas em cada unidade.</p>
+      <div class="loc-grid" id="locaisGrid"></div>
+      <div class="chart-container" id="locaisChart"></div>
+    </div>
 
     <div class="client-card">
       <h3 class="timeline-title" style="margin-bottom:12px;">Detalhamento dos clientes</h3>
@@ -625,6 +685,10 @@ const DATA = {
     weekly: [["2026-06-15",4],["2026-06-22",1],["2026-06-29",5],["2026-07-13",19],["2026-07-20",9],["2026-07-27",5],["2026-08-03",11],["2026-08-10",9],["2026-08-17",3],["2026-08-24",6],["2026-08-31",2],["2026-09-14",1]],
     monthly: [["2026-06",7],["2026-07",36],["2026-08",29],["2026-09",3]]
   },
+  locais: [
+    {local:"Tatuapé", agendados:52, compareceram:37, pagas:10},
+    {local:"Perdizes", agendados:23, compareceram:17, pagas:6}
+  ],
   dre: {
     months: ["2026-06","2026-07","2026-08"],
     rows: [
@@ -686,6 +750,70 @@ function renderFunil(funil){
     `;
     funilWrap.appendChild(el);
   });
+}
+
+function renderLocais(){
+  const rows = DATA.locais || [];
+  const grid = document.getElementById('locaisGrid');
+  const chart = document.getElementById('locaisChart');
+  if(!grid || !chart) return;
+  if(!rows.length){
+    grid.innerHTML = '';
+    chart.style.height = '80px';
+    chart.innerHTML = '<p style="color:#6B6B6B;font-size:13px;">Sem campo Local preenchido no Funil de Vendas.</p>';
+    return;
+  }
+
+  const maxComp = Math.max(...rows.map(r => r.compareceram));
+  const maxPagas = Math.max(...rows.map(r => r.pagas));
+  const totalComp = rows.reduce((s,r) => s + r.compareceram, 0);
+  const totalPagas = rows.reduce((s,r) => s + r.pagas, 0);
+
+  grid.innerHTML = rows.map(r => {
+    const conv = r.compareceram ? ((r.pagas / r.compareceram) * 100).toFixed(1).replace('.', ',') + '%' : '—';
+    const badges = [
+      r.compareceram === maxComp && maxComp > 0 ? '<span class="loc-badge">Mais consultas</span>' : '',
+      r.pagas === maxPagas && maxPagas > 0 ? '<span class="loc-badge paid">Mais propostas fechadas</span>' : ''
+    ].join('');
+    const lead = (r.compareceram === maxComp || r.pagas === maxPagas) ? ' lead' : '';
+    return `<div class="loc-card${lead}">
+      <div class="loc-name">${escapeHtml(r.local)}</div>
+      <div class="loc-badges">${badges || '&nbsp;'}</div>
+      <div class="loc-metrics">
+        <div class="loc-metric"><div class="lbl">Agendadas</div><div class="val">${r.agendados}</div><div class="sub">no funil</div></div>
+        <div class="loc-metric"><div class="lbl">Compareceram</div><div class="val">${r.compareceram}</div><div class="sub">${totalComp ? ((r.compareceram/totalComp)*100).toFixed(0) : 0}% do total</div></div>
+        <div class="loc-metric"><div class="lbl">Pagas</div><div class="val">${r.pagas}</div><div class="sub">${conv} conversão</div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const maxVal = niceMax(Math.max(1, ...rows.map(r => Math.max(r.compareceram, r.pagas))));
+  const W = 900, rowH = 72, pad = { top: 8, right: 56, bottom: 8, left: 110 };
+  const H = pad.top + pad.bottom + rows.length * rowH;
+  chart.style.height = H + 'px';
+  const innerW = W - pad.left - pad.right;
+  const barH = 14;
+  const xAt = v => pad.left + innerW * (v / maxVal);
+
+  let bars = '';
+  rows.forEach((r, i) => {
+    const y0 = pad.top + i * rowH + 18;
+    const wC = Math.max(2, xAt(r.compareceram) - pad.left);
+    const wP = Math.max(2, xAt(r.pagas) - pad.left);
+    bars += `<text x="${pad.left-10}" y="${y0 + 16}" text-anchor="end" font-size="13" font-weight="700" font-family="Manrope, sans-serif" fill="#2F3E46">${escapeHtml(r.local)}</text>
+      <rect x="${pad.left}" y="${y0}" width="${wC}" height="${barH}" rx="4" fill="#2F3E46">
+        <title>${r.local}: ${r.compareceram} compareceram</title>
+      </rect>
+      <text x="${xAt(r.compareceram)+8}" y="${y0+11}" font-size="11" font-weight="700" font-family="Manrope, sans-serif" fill="#2F3E46">${r.compareceram}</text>
+      <rect x="${pad.left}" y="${y0 + barH + 6}" width="${wP}" height="${barH}" rx="4" fill="#F4633A">
+        <title>${r.local}: ${r.pagas} propostas pagas</title>
+      </rect>
+      <text x="${xAt(r.pagas)+8}" y="${y0+barH+17}" font-size="11" font-weight="700" font-family="Manrope, sans-serif" fill="#F4633A">${r.pagas}</text>`;
+  });
+
+  chart.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Comparecimento e propostas pagas por local">
+    ${bars}
+  </svg>`;
 }
 
 // ---------- GRÁFICO (SVG puro, sem biblioteca externa) ----------
@@ -1114,6 +1242,7 @@ function renderDRE(){
 // ---------- INICIALIZAÇÃO ----------
 // Cada bloco roda isolado: se um falhar, os outros ainda aparecem.
 try { renderFunil(DATA.funil); } catch(e){ console.error('Erro no funil:', e); }
+try { renderLocais(); } catch(e){ console.error('Erro nos locais:', e); }
 try { renderClientGrid('agendadas'); } catch(e){ console.error('Erro no grid de clientes:', e); }
 try { renderChart('daily'); } catch(e){ console.error('Erro no gráfico:', e); }
 try {

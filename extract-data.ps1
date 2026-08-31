@@ -145,6 +145,9 @@ $colProposta = $headers['Possui Proposta?']
 $colPropostaPaga = $headers['Tratamento Pago?']
 if (-not $colPropostaPaga) { $colPropostaPaga = $headers['Proposta Paga?'] }
 if (-not $colPropostaPaga) { $colPropostaPaga = $headers['Proposta paga?'] }
+$colLocal = $headers['Local']
+if (-not $colLocal) { $colLocal = $headers['Local Consulta'] }
+if (-not $colLocal) { $colLocal = $headers['Unidade'] }
 
 $rows = @()
 for ($r = 3; $r -le 200; $r++) {
@@ -159,6 +162,7 @@ for ($r = 3; $r -le 200; $r++) {
     Compareceu = Normalize-YesNo (Get-GridValue $funilGrid $r $colCompareceu)
     Proposta = Normalize-YesNo (Get-GridValue $funilGrid $r $colProposta)
     PropostaPaga = Normalize-YesNo (Get-GridValue $funilGrid $r $colPropostaPaga)
+    Local = if ($colLocal) { Get-GridValue $funilGrid $r $colLocal } else { $null }
   }
 }
 
@@ -198,7 +202,23 @@ foreach ($row in $rows) {
 }
 $monthlySeries = $monthly.GetEnumerator() | Sort-Object Name | ForEach-Object { ,@($_.Name, $_.Value) }
 
+$locais = @{}
+foreach ($row in $rows) {
+  $loc = [string]$row.Local
+  if ($null -eq $row.Local -or $loc.Trim() -eq '' -or $loc -match '^(NA|N/A|-)$') { $loc = 'Não informado' }
+  else { $loc = $loc.Trim() }
+  if (-not $locais.ContainsKey($loc)) { $locais[$loc] = @{ agendados = 0; compareceram = 0; pagas = 0 } }
+  $locais[$loc].agendados++
+  if ($row.Compareceu -eq 'Sim') { $locais[$loc].compareceram++ }
+  if ($row.PropostaPaga -eq 'Sim') { $locais[$loc].pagas++ }
+}
+$locaisSeries = $locais.GetEnumerator() | Sort-Object { $_.Value.compareceram } -Descending | ForEach-Object {
+  [ordered]@{ local = $_.Name; agendados = $_.Value.agendados; compareceram = $_.Value.compareceram; pagas = $_.Value.pagas }
+}
+
 "`nCONSULTAS daily=$($dailySeries.Count) weekly=$($weeklySeries.Count) monthly=$($monthlySeries.Count)"
+"`nLOCAIS:"
+$locaisSeries | ForEach-Object { "$($_.local): agendados=$($_.agendados) compareceram=$($_.compareceram) pagas=$($_.pagas)" }
 
 # Fluxo_Caixa headers (linha 1)
 $fluxoHeaders = @{}
@@ -276,6 +296,7 @@ $dataObj = [ordered]@{
     weekly = $weeklySeries
     monthly = $monthlySeries
   }
+  locais = $locaisSeries
   financeiro = [ordered]@{
     totalFaturamento = [math]::Round($totalFaturamento)
     totalCaixa = [math]::Round($totalCaixa)
